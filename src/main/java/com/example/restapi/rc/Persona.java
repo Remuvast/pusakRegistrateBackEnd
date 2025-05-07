@@ -6,7 +6,7 @@ package com.example.restapi.rc;
 
 import java.util.Date;
 
-import jakarta.persistence.Transient;
+import javax.persistence.Transient;
 
 /**
  *

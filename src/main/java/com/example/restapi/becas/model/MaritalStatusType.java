@@ -1,5 +1,5 @@
 package com.example.restapi.becas.model;
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "catalogos")

@@ -1,6 +1,6 @@
 package com.example.restapi.usuarios.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "preguntas")

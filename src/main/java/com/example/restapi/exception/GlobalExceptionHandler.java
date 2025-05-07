@@ -30,12 +30,27 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception ex) {
-        ex.printStackTrace(); // 👈 esto lo imprime en la consola
+        ex.printStackTrace(); // Imprime en consola
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "Ocurrió un error inesperado: " + ex.getMessage())); // 👈 opcionalmente incluyes esto en el body también
+                .body(new ErrorResponse(500, "Ocurrió un error inesperado: " + ex.getMessage()));
     }
 
-    // Case interna para formato del error
-    record ErrorResponse(int status, String message) {
+    // Clase interna para el formato del error
+    static class ErrorResponse {
+        private final int status;
+        private final String message;
+
+        public ErrorResponse(int status, String message) {
+            this.status = status;
+            this.message = message;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

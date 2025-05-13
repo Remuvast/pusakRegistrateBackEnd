@@ -137,5 +137,4 @@ public class Institucion {
     public void setNombre(String value) {
         this.nombre = value;
     }
-
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import com.example.restapi.dto.DatosRegistroCivilDTO;
 
 @RestController
 @RequestMapping("/api/registro-civil")
@@ -25,7 +26,8 @@ public class RegistroCivilController {
             }
 
             // Llamar al servicio con la cédula enviada en el JSON
-            GetFichaGeneralResponse response = servicioRegistroCivil.consultarFichaGeneral(consultaCedulaDTO.getNumeroCedula());
+            DatosRegistroCivilDTO response = servicioRegistroCivil.consultarFichaGeneral(consultaCedulaDTO.getNumeroCedula());
+
 
             if (response == null) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

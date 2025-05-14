@@ -1,5 +1,8 @@
 package com.example.restapi.dto;
 
+import java.util.List;
+import com.example.restapi.model.Campo;
+
 public class DatosRegistroCivilDTO {
     private String cedula;
     private String nombre;
@@ -8,7 +11,11 @@ public class DatosRegistroCivilDTO {
     private String fechaNacimiento;
     private String sexo;
     private String estadoCivil;
+    private String apellidosCompletos;
+    private String nombresApellidos;
+    private List<Campo> datosGlobales;
 
+    private boolean nombreBloqueado;
     public DatosRegistroCivilDTO() {}
 
     // Getters y setters
@@ -66,5 +73,37 @@ public class DatosRegistroCivilDTO {
 
     public void setEstadoCivil(String estadoCivil) {
         this.estadoCivil = estadoCivil;
+    }
+
+    public String getApellidosCompletos() {
+        return apellidosCompletos;
+    }
+
+    public void setApellidosCompletos(String apellidosCompletos) {
+        this.apellidosCompletos = apellidosCompletos;
+    }
+
+    public String getNombresApellidos() {
+        return nombresApellidos;
+    }
+
+    public void setNombresApellidos(String nombresApellidos) {
+        this.nombresApellidos = nombresApellidos;
+    }
+
+    public List<Campo> getDatosGlobales() {
+        return datosGlobales;
+    }
+
+    public void setDatosGlobales(List<Campo> datosGlobales) {
+        this.datosGlobales = datosGlobales;
+    }
+
+    public boolean isNombreBloqueado() {
+        return nombreBloqueado;
+    }
+
+    public void setNombreBloqueado(boolean nombreBloqueado) {
+        this.nombreBloqueado = nombreBloqueado;
     }
 }

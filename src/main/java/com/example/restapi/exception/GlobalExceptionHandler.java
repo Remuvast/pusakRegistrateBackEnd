@@ -1,56 +1,28 @@
 package com.example.restapi.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        String rootMessage = ex.getMostSpecificCause().getMessage();
-        String message;
+    public ResponseEntity<String> handleDuplicateKey(DataIntegrityViolationException ex) {
+        String rootMessage = ex.getRootCause() != null ? ex.getRootCause().getMessage() : "";
 
-        if (rootMessage != null) {
-            if (rootMessage.contains("username_estado_uk")) {
-                message = "El número de identificación ya está registrado y vigente.";
-            } else if (rootMessage.contains("correo_principal_estado_uk")) {
-                message = "El correo electrónico ya está registrado y vigente.";
-            } else {
-                message = "Error de integridad de datos: " + rootMessage;
-            }
-        } else {
-            message = "Error de integridad de datos.";
+        if (rootMessage.contains("username_estado_uk")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un usuario con esa cédula y estado vigente.");
+        } else if (rootMessage.contains("correo_principal_estado_uk")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un usuario con ese correo principal y estado vigente.");
         }
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(HttpStatus.CONFLICT.value(), message));
+                .body("Conflicto de integridad de datos: " + rootMessage);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGenericException(Exception ex) {
-        ex.printStackTrace(); // Imprime en consola
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "Ocurrió un error inesperado: " + ex.getMessage()));
-    }
-
-    // Clase interna para el formato del error
-    static class ErrorResponse {
-        private final int status;
-        private final String message;
-
-        public ErrorResponse(int status, String message) {
-            this.status = status;
-            this.message = message;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
 }

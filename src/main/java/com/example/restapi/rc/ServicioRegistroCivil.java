@@ -6,6 +6,7 @@ import com.example.restapi.util.RegistroCivilFormatter;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.util.Arrays;
 
 import java.util.List;
 
@@ -55,35 +56,75 @@ public class ServicioRegistroCivil {
 
     private DatosRegistroCivilDTO mapearCamposPrincipales(List<Campo> campos) {
         DatosRegistroCivilDTO dto = new DatosRegistroCivilDTO();
+        dto.setDatosGlobales(campos); // guarda todos los datos crudos
 
         for (Campo campo : campos) {
             String valor = campo.getValor();
+
             switch (campo.getNombre()) {
                 case "cedula":
                     dto.setCedula(valor);
                     break;
+
                 case "nombre":
-                    String[] partes = valor.trim().split(" ");
-                    if (partes.length >= 3) {
+                    dto.setNombresApellidos(valor); // guarda todo el valor crudo
+
+                    String[] partes = valor.trim().split("\\s+");
+                    int len = partes.length;
+
+                    boolean nombreBloqueado = true;
+
+                    if (len >= 4) {
+                        // Asignar nombre y apellidos usando lógica heurística
+                        dto.setNombre(String.join(" ", Arrays.copyOfRange(partes, len - 2, len)));
+                        dto.setApellidoMaterno(partes[len - 3]);
+                        dto.setApellidoPaterno(String.join(" ", Arrays.copyOfRange(partes, 0, len - 3)));
+
+                        int nombresCount = 2;
+                        int apellidosCount = len - 2;
+
+                        if (nombresCount > 2 || apellidosCount > 2) {
+                            nombreBloqueado = false;
+                        }
+                    } else if (len == 3) {
                         dto.setApellidoPaterno(partes[0]);
                         dto.setApellidoMaterno(partes[1]);
-                        dto.setNombre(String.join(" ", java.util.Arrays.copyOfRange(partes, 2, partes.length)));
+                        dto.setNombre(partes[2]);
+                        nombreBloqueado = true;
+                    } else if (len == 2) {
+                        dto.setApellidoPaterno(partes[0]);
+                        dto.setNombre(partes[1]);
+                        nombreBloqueado = true;
                     } else {
                         dto.setNombre(valor);
+                        nombreBloqueado = false;
                     }
+
+                    dto.setNombreBloqueado(nombreBloqueado);
                     break;
+
                 case "fechaNacimiento":
                     dto.setFechaNacimiento(valor);
                     break;
+
                 case "sexo":
                     dto.setSexo(valor);
                     break;
+
                 case "estadoCivil":
                     dto.setEstadoCivil(valor);
                     break;
             }
         }
 
+        // Apellidos completos (sin nombres)
+        String apellidosCompletos = String.join(" ",
+            dto.getApellidoPaterno() != null ? dto.getApellidoPaterno() : "",
+            dto.getApellidoMaterno() != null ? dto.getApellidoMaterno() : ""
+        ).trim();
+        dto.setApellidosCompletos(apellidosCompletos);
+
         return dto;
     }
+
 }

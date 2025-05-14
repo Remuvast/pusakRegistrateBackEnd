@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-//import java.time.LocalDate;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -42,11 +42,11 @@ public class RegistroService {
         usuario.setClave(passwordEncoder.encode(dto.getClave()));
         usuario.setCorreoPrincipal(dto.getCorreoPrincipal());
         usuario.setCorreoAlterno(dto.getCorreoAlterno());
-      //  usuario.setFechaExpiracionClave(LocalDate.now().plusYears(1));
+        usuario.setFechaExpiracionClave(LocalDate.now().plusYears(1));
         usuario.setInstitucionesId(2);
         usuario.setPrimeraVez(true);
         usuario.setUsuarioCreacion(dto.getNumeroIdentificacion());
-       // usuario.setFechaCreacion(LocalDate.now());
+        usuario.setFechaCreacion(LocalDate.now());
         usuario.setVigente(true);
         usuario.setActivo(false);
         usuario.setTiposUsuariosId(3);
@@ -68,7 +68,7 @@ public class RegistroService {
         solicitante.setApellidoCompleto(dto.getApellidos());
         solicitante.setNombreCompleto(dto.getNombres());
         solicitante.setApellidoNombre(dto.getApellidosNombres());
-     //   solicitante.setFechaNacimiento(LocalDate.parse(dto.getFechaNacimiento()));
+        solicitante.setFechaNacimiento(LocalDate.parse(dto.getFechaNacimiento()));
         solicitante.setCatalogosGeneroId(dto.getCodigoGenero());
         solicitante.setCatalogosEstadoCivilId(dto.getCodigoEstadoCivil());
         solicitante.setCatalogosEtniaId(dto.getCodigoEtnia());

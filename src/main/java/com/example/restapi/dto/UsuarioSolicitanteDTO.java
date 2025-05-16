@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class UsuarioSolicitanteDTO {
     // Datos para la tabla usuarios
+    private Long id;
+    private String codigoActivacion;
     private String nombres;
     private String apellidos;
     private String tipoIdentificacion;

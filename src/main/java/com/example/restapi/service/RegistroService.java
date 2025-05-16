@@ -11,11 +11,13 @@ import com.example.restapi.becas.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
+
 public class RegistroService {
 
     @Autowired
@@ -30,15 +32,15 @@ public class RegistroService {
     @Autowired
     private SolicitanteRepository solicitanteRepository;
 
+
     public void registrar(UsuarioSolicitanteDTO dto) {
-        // Guardar en tabla usuarios
+        // 1. Crear y configurar el usuario
         Usuario usuario = new Usuario();
         usuario.setNombres(dto.getNombres());
         usuario.setApellidos(dto.getApellidos());
         usuario.setTipoIdentificacion(dto.getTipoIdentificacion());
         usuario.setNumeroIdentificacion(dto.getNumeroIdentificacion());
         usuario.setUsername(dto.getNumeroIdentificacion());
-        //passwordEncoder es un bean que debes definir en tu configuración de seguridad
         usuario.setClave(passwordEncoder.encode(dto.getClave()));
         usuario.setCorreoPrincipal(dto.getCorreoPrincipal());
         usuario.setCorreoAlterno(dto.getCorreoAlterno());
@@ -48,7 +50,7 @@ public class RegistroService {
         usuario.setUsuarioCreacion(dto.getNumeroIdentificacion());
         usuario.setFechaCreacion(LocalDate.now());
         usuario.setVigente(true);
-        usuario.setActivo(false);
+        usuario.setActivo(false); // Desactivado hasta activar vía email
         usuario.setTiposUsuariosId(3);
         usuario.setPreguntas1Id(2);
         usuario.setRespuesta1(dto.getRespuesta1());
@@ -59,9 +61,15 @@ public class RegistroService {
         usuario.setBloqueado(false);
         usuario.setNombreCompleto(dto.getApellidosNombres());
         usuario.setRegistrado(true);
-        usuarioRepository.save(usuario);
 
-        // Guardar en tabla solicitantes
+        // 👉 Generar código de activación
+        String codigo = UUID.randomUUID().toString();
+        usuario.setCodigoActivacion(codigo);
+
+        // 👉 Guardar usuario
+        usuario = usuarioRepository.save(usuario); // se actualiza con ID
+
+        // 2. Crear y guardar solicitante
         Solicitante solicitante = new Solicitante();
         solicitante.setCatalogosTipoIdentificacionId(mapTipoIdentificacion(dto.getTipoIdentificacion()));
         solicitante.setNumeroIdentificacion(dto.getNumeroIdentificacion());
@@ -96,13 +104,14 @@ public class RegistroService {
         solicitante.setLugarNacimiento(dto.getLugarNacimiento());
         solicitante.setOrigenManual(false);
         solicitanteRepository.save(solicitante);
-        usuario.setCodigoActivacion(UUID.randomUUID().toString());
-        usuario = usuarioRepository.save(usuario); // importante reasignar para obtener el ID generado
+
+        String frontendActivacionUrl = "http://localhost:4200/activate";
+        String enlace = frontendActivacionUrl + "?id=" + usuario.getId() + "&codigo=" + codigo;
+
         emailService.enviarCorreoActivacion(
             usuario.getCorreoPrincipal(),
             usuario.getNombreCompleto(),
-            usuario.getId(),
-            usuario.getCodigoActivacion()
+            enlace
         );
     }
 
@@ -118,4 +127,5 @@ public class RegistroService {
                 return 913;
         }
     }
+
 }

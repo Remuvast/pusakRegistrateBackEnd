@@ -4,6 +4,7 @@ import com.example.restapi.dto.UsuarioSolicitanteDTO;
 import com.example.restapi.service.RegistroService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/registro")
@@ -18,6 +19,6 @@ public class UsuarioSolicitanteController {
     @PostMapping
     public ResponseEntity<?> registrarUsuarioYSolicitante(@RequestBody UsuarioSolicitanteDTO dto) {
         service.registrar(dto);
-        return ResponseEntity.ok("Registro exitoso");
+        return ResponseEntity.ok(Collections.singletonMap("mensaje", "Registro exitoso"));
     }
 }

@@ -78,4 +78,5 @@ public class Usuario {
     @Column(name = "codigo_activacion")
     private String codigoActivacion;
 
+
 }

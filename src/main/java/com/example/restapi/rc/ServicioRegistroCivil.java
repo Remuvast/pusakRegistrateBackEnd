@@ -56,7 +56,6 @@ public class ServicioRegistroCivil {
 
     private DatosRegistroCivilDTO mapearCamposPrincipales(List<Campo> campos) {
         DatosRegistroCivilDTO dto = new DatosRegistroCivilDTO();
-        dto.setDatosGlobales(campos); // guarda todos los datos crudos
 
         for (Campo campo : campos) {
             String valor = campo.getValor();
@@ -70,37 +69,45 @@ public class ServicioRegistroCivil {
                     dto.setNombresApellidos(valor); // guarda todo el valor crudo
 
                     String[] partes = valor.trim().split("\\s+");
-                    int len = partes.length;
+                    StringBuilder nombres = new StringBuilder();
+                    StringBuilder apellidos = new StringBuilder();
+                    String[] palabrasCompuestas = { "DE", "DEL", "LA", "LOS", "SAN", "SANTA", "DA" };
+                    int numeroDeApellidos = 1;
+                    String palabraCompuesta = "";
+                    boolean terminarConcatenacion;
 
-                    boolean nombreBloqueado = true;
+                    for (int j = 0; j < partes.length; j++) {
+                        String parteActual = partes[j];
+                        terminarConcatenacion = true;
 
-                    if (len >= 4) {
-                        // Asignar nombre y apellidos usando lógica heurística
-                        dto.setNombre(String.join(" ", Arrays.copyOfRange(partes, len - 2, len)));
-                        dto.setApellidoMaterno(partes[len - 3]);
-                        dto.setApellidoPaterno(String.join(" ", Arrays.copyOfRange(partes, 0, len - 3)));
-
-                        int nombresCount = 2;
-                        int apellidosCount = len - 2;
-
-                        if (nombresCount > 2 || apellidosCount > 2) {
-                            nombreBloqueado = false;
+                        for (String pc : palabrasCompuestas) {
+                            if (pc.equalsIgnoreCase(parteActual)) {
+                                palabraCompuesta += parteActual + " ";
+                                terminarConcatenacion = false;
+                                break;
+                            }
                         }
-                    } else if (len == 3) {
-                        dto.setApellidoPaterno(partes[0]);
-                        dto.setApellidoMaterno(partes[1]);
-                        dto.setNombre(partes[2]);
-                        nombreBloqueado = true;
-                    } else if (len == 2) {
-                        dto.setApellidoPaterno(partes[0]);
-                        dto.setNombre(partes[1]);
-                        nombreBloqueado = true;
-                    } else {
-                        dto.setNombre(valor);
-                        nombreBloqueado = false;
+
+                        if (numeroDeApellidos > 2) {
+                            nombres.append(parteActual).append(" ");
+                        } else if (terminarConcatenacion) {
+                            if (!palabraCompuesta.isEmpty()) {
+                                apellidos.append(palabraCompuesta).append(parteActual).append(" ");
+                                palabraCompuesta = "";
+                            } else {
+                                apellidos.append(parteActual).append(" ");
+                            }
+                            numeroDeApellidos++;
+                        }
                     }
 
-                    dto.setNombreBloqueado(nombreBloqueado);
+                    String[] apellidosSeparados = apellidos.toString().trim().split(" ", 2);
+                    dto.setApellidoPaterno(apellidosSeparados.length > 0 ? apellidosSeparados[0] : "");
+                    dto.setApellidoMaterno(apellidosSeparados.length > 1 ? apellidosSeparados[1] : "");
+                    dto.setNombre(nombres.toString().replaceAll("\\s{2,}", " ").trim());
+
+                    // Bloquea solo si el nombre completo tiene exactamente 4 partes (caso típico)
+                    dto.setNombreBloqueado(partes.length == 4);
                     break;
 
                 case "fechaNacimiento":
@@ -126,5 +133,4 @@ public class ServicioRegistroCivil {
 
         return dto;
     }
-
 }

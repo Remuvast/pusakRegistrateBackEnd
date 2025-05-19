@@ -57,6 +57,9 @@ public class ServicioRegistroCivil {
     private DatosRegistroCivilDTO mapearCamposPrincipales(List<Campo> campos) {
         DatosRegistroCivilDTO dto = new DatosRegistroCivilDTO();
 
+        //datos globales
+        dto.setDatosGlobales(campos);
+
         for (Campo campo : campos) {
             String valor = campo.getValor();
 

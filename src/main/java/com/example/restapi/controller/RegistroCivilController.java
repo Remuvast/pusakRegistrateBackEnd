@@ -18,27 +18,14 @@ public class RegistroCivilController {
 
     @PostMapping("/consultar")
     public ResponseEntity<?> consultarCedula(@RequestBody ConsultaCedulaDTO consultaCedulaDTO) {
-        try {
-            System.out.println("Consultando cédula: " + consultaCedulaDTO.getNumeroCedula());
+        System.out.println("Consultando cédula: " + consultaCedulaDTO.getNumeroCedula());
 
-            if (consultaCedulaDTO.getNumeroCedula() == null || consultaCedulaDTO.getNumeroCedula().isEmpty()) {
-                return ResponseEntity.badRequest().body("El número de cédula es obligatorio.");
-            }
-
-            // Llamar al servicio con la cédula enviada en el JSON
-            DatosRegistroCivilDTO response = servicioRegistroCivil.consultarFichaGeneral(consultaCedulaDTO.getNumeroCedula());
-
-
-            if (response == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Ocurrió un error al consultar la cédula.");
-            }
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ocurrió un error al consultar la cédula.");
+        if (consultaCedulaDTO.getNumeroCedula() == null || consultaCedulaDTO.getNumeroCedula().isEmpty()) {
+            return ResponseEntity.badRequest().body("El número de cédula es obligatorio.");
         }
+
+        DatosRegistroCivilDTO response = servicioRegistroCivil.consultarFichaGeneral(consultaCedulaDTO.getNumeroCedula());
+        return ResponseEntity.ok(response);
     }
+
 }

@@ -3,10 +3,13 @@ package com.example.restapi.exception;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
-@ControllerAdvice
+import java.util.Map;
+
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -25,4 +28,14 @@ public class GlobalExceptionHandler {
                 .body("Conflicto de integridad de datos: " + rootMessage);
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex) {
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(Map.of(
+                        "status", ex.getStatus().value(),
+                        "error", ex.getStatus().getReasonPhrase(),
+                        "message", ex.getReason()
+                ));
+    }
 }

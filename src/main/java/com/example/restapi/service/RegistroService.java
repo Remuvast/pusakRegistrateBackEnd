@@ -32,6 +32,9 @@ public class RegistroService {
     @Autowired
     private SolicitanteRepository solicitanteRepository;
 
+    @Value("${app.frontend.activacion.url}")
+    private String frontendActivacionUrl;
+
 
     public void registrar(UsuarioSolicitanteDTO dto) {
         // 1. Crear y configurar el usuario
@@ -105,7 +108,7 @@ public class RegistroService {
         solicitante.setOrigenManual(false);
         solicitanteRepository.save(solicitante);
 
-        String frontendActivacionUrl = "http://localhost:4200/activate";
+        String url = frontendActivacionUrl;
         String enlace = frontendActivacionUrl + "?id=" + usuario.getId() + "&codigo=" + codigo;
 
         emailService.enviarCorreoActivacion(

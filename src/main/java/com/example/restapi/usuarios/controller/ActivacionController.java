@@ -2,15 +2,13 @@ package com.example.restapi.usuarios.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
-import com.example.restapi.service.EmailService;
 import com.example.restapi.usuarios.model.Usuario;
 import com.example.restapi.usuarios.repository.UsuariosRepository;
-import org.springframework.http.HttpStatus;
+
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,8 +19,8 @@ public class ActivacionController {
     private UsuariosRepository usuariosRepository;
 
     @GetMapping("/activar")
-    public ResponseEntity<String> activarCuenta(@RequestParam("id") Long id,
-            @RequestParam("codigo") String codigo) {
+    public ResponseEntity<?> activarCuenta(@RequestParam("id") Long id,
+                                           @RequestParam("codigo") String codigo) {
         Optional<Usuario> usuarioOpt = usuariosRepository.findByIdAndCodigoActivacion(id, codigo);
 
         if (usuarioOpt.isPresent()) {
@@ -30,9 +28,17 @@ public class ActivacionController {
             usuario.setActivo(true);
             usuario.setCodigoActivacion(null); // Limpiar el código
             usuariosRepository.save(usuario);
-            return ResponseEntity.ok("Cuenta activada exitosamente.");
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "mensaje", "Cuenta activada exitosamente.",
+                    "correo", usuario.getCorreoPrincipal()
+            ));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Código o ID inválido.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "success", false,
+                    "mensaje", "Código o ID inválido."
+            ));
         }
     }
 }

@@ -124,3 +124,125 @@ Si estás usando un frontend que consume esta API, asegúrate de:
 ---
 
 > ✉️ *Este servicio incluye el envío de correos de activación usando Mailtrap o SMTP configurado correctamente.*
+
+
+**Resumen de Configuración y Solución de Problemas: PostgreSQL 9.3 + Spring Boot + Docker**
+
+---
+
+### 1. Verificación de PostgreSQL
+
+* Se verificó que `psql` está instalado usando:
+
+  ```bash
+  which psql
+  ```
+* Intento fallido de conexión local:
+
+  ```bash
+  psql -U postgres
+  ```
+
+  Error: no se pudo conectar al socket Unix.
+
+---
+
+### 2. Inicio manual de PostgreSQL
+
+* Intento fallido como root:
+
+  ```bash
+  sudo /opt/PostgreSQL/9.3/bin/pg_ctl start -D /opt/PostgreSQL/9.3/data
+  ```
+* Se cambió al usuario correcto:
+
+  ```bash
+  sudo su - postgres
+  /opt/PostgreSQL/9.3/bin/pg_ctl start -D /opt/PostgreSQL/9.3/data
+  ```
+
+  * Salto de advertencia: ya había un servidor activo.
+
+---
+
+### 3. Conexión exitosa a PostgreSQL
+
+* Se logró la conexión con:
+
+  ```bash
+  psql -h 127.0.0.1 -U postgres
+  ```
+
+---
+
+### 4. Configuración de datasources en Spring Boot
+
+```properties
+spring.datasource.jdbc-url=jdbc:postgresql://172.17.0.1:5432/usuarios2025-04-12-0630
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+second.datasource.jdbc-url=jdbc:postgresql://172.17.0.1:5432/becas2025-04-12-0630
+second.datasource.username=postgres
+second.datasource.password=postgres
+second.datasource.driver-class-name=org.postgresql.Driver
+```
+
+---
+
+### 5. Errores comunes y soluciones
+
+* **host.docker.internal no encontrado**: se reemplazó con `172.17.0.1`.
+* **FATAL: no pg\_hba.conf entry...**:
+
+  * PostgreSQL estaba rechazando conexiones externas desde Docker.
+
+---
+
+### 6. Ajustes necesarios en PostgreSQL
+
+#### postgresql.conf
+
+Se agregó:
+
+```conf
+listen_addresses = '*'
+```
+
+#### pg\_hba.conf
+
+Se agregó al final:
+
+```conf
+host all all 172.17.0.0/16 trust
+```
+
+Esto permite conexiones desde la red Docker.
+
+---
+
+### 7. Reinicio de PostgreSQL
+
+Para aplicar los cambios:
+
+```bash
+/opt/PostgreSQL/9.3/bin/pg_ctl -D /opt/PostgreSQL/9.3/data restart
+```
+
+---
+
+### Estado Final
+
+* PostgreSQL 9.3 funcionando correctamente.
+* Spring Boot configurado con dos datasources.
+* Conexión exitosa entre la app y PostgreSQL usando red Docker.
+* Archivos `postgresql.conf` y `pg_hba.conf` correctamente ajustados.
+
+---
+
+**Notas:**
+
+* PostgreSQL 9.3 es muy antiguo. Se recomienda actualizar si es posible.
+* Considerar usar Docker para PostgreSQL y evitar instalaciones directas en el sistema operativo.
+

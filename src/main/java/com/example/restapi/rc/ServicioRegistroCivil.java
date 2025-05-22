@@ -12,9 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
+import java.net.SocketTimeoutException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 @Service
 public class ServicioRegistroCivil {
@@ -31,6 +34,7 @@ public class ServicioRegistroCivil {
     @Autowired
     private UsuariosRepository usuarioRepository;
 
+    // Mapeo de condiciones → mensajes
     private static final Map<String, String> REGLAS_CONDICION = new HashMap<>();
     static {
         REGLAS_CONDICION.put("FALLECIDO", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_FALLECIDO);
@@ -49,6 +53,7 @@ public class ServicioRegistroCivil {
     }
 
     public DatosRegistroCivilDTO consultarFichaGeneral(String cedula) {
+        // 1) Conflict si ya existe en BD
         if (usuarioRepository.existsByNumeroIdentificacion(cedula)) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT,
@@ -59,31 +64,53 @@ public class ServicioRegistroCivil {
         try {
             System.out.println("✅ Iniciando consulta para cédula: " + cedula);
 
-            // 2) Configura y llama al cliente SOAP
+            // 2) Crear cliente SOAP
             JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
             factory.setServiceClass(InteroperadorlImpl.class);
             factory.setAddress(wsdlUrl);
             factory.setUsername(wsdlUsuario);
             factory.setPassword(wsdlClave);
-
             InteroperadorlImpl port = (InteroperadorlImpl) factory.create();
+
+            // 3) Configurar timeout 10s
+            BindingProvider bp = (BindingProvider) port;
+            bp.getRequestContext().put("javax.xml.ws.client.connectionTimeout", "10000");
+            bp.getRequestContext().put("javax.xml.ws.client.receiveTimeout",    "10000");
+
+            // 4) Llamada al WS
             GetFichaGeneral parametros = new GetFichaGeneral();
             parametros.setNumeroIdentificacion(cedula);
             parametros.setCodigoPaquete("471");
-
             GetFichaGeneralResponse response = port.getFichaGeneral(parametros);
 
-            // 3) Extrae los campos y valida condición
+            // 5) Extraer campos y validar condición
             List<Campo> campos = RegistroCivilFormatter.extraerCampos(response.getReturn());
             validarCondicion(campos);
 
-            // 4) Mapea al DTO y retorna
+            // 6) Mapear y retornar DTO
             return mapearCamposPrincipales(campos);
 
+        } catch (WebServiceException wse) {
+            // 7) Timeout (SocketTimeout) → 503 con tu constante
+            Throwable cause = wse.getCause();
+            if (cause instanceof SocketTimeoutException
+             || (cause != null && cause.getMessage().contains("Read timed out"))) {
+                throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    Constantes.ConsumoWebServices.SERVICIO_NO_DISPONIBLE
+                );
+            }
+            // Otro error SOAP → 500 genérico
+            throw new ResponseStatusException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Ocurrió un error al consultar la cédula: " + wse.getMessage(),
+                wse
+            );
         } catch (ResponseStatusException ex) {
-            // 409 Conflict personalizado
+            // Re-lanzar 409 o 503
             throw ex;
         } catch (Exception ex) {
+            // Cualquier otro → 500
             ex.printStackTrace();
             throw new ResponseStatusException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -92,11 +119,6 @@ public class ServicioRegistroCivil {
             );
         }
     }
-
-    /**
-     * Busca en los campos la propiedad "condicionCiudadano" y si su valor
-     * coincide con alguna regla, lanza un 409 con el mensaje correspondiente.
-     */
 
     private void validarCondicion(List<Campo> campos) {
         String condicion = campos.stream()

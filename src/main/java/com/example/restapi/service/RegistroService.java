@@ -113,7 +113,8 @@ public class RegistroService {
 
         emailService.enviarCorreoActivacion(
             usuario.getCorreoPrincipal(),
-            usuario.getNombreCompleto(),
+            usuario.getApellidos() + " " + usuario.getNombres(),
+            usuario.getNumeroIdentificacion(),
             enlace
         );
     }

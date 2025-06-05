@@ -140,6 +140,7 @@ public class ServicioRegistroCivil {
 
         for (Campo campo : campos) {
             String valor = campo.getValor();
+          //  dto.setDatosGlobales(campos);
 
             switch (campo.getNombre()) {
                 case "cedula":

@@ -2,7 +2,7 @@
 FROM maven:3.9.4-eclipse-temurin-11-alpine AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean generate-sources package -DskipTests
 
 # Etapa 2: run con JDK 11
 FROM eclipse-temurin:11-jdk-alpine

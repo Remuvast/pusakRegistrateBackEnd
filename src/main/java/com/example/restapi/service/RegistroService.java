@@ -1,5 +1,3 @@
-// Ahora vamos a crear el servicio que manejará la lógica de inserción en ambas tablas (usuarios y solicitantes):
-
 package com.example.restapi.service;
 
 import com.example.restapi.dto.UsuarioSolicitanteDTO;
@@ -17,7 +15,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
-
 public class RegistroService {
 
     @Autowired
@@ -34,7 +31,6 @@ public class RegistroService {
 
     @Value("${app.frontend.activacion.url}")
     private String frontendActivacionUrl;
-
 
     public void registrar(UsuarioSolicitanteDTO dto) {
         // 1. Crear y configurar el usuario
@@ -62,15 +58,18 @@ public class RegistroService {
         usuario.setPreguntas3Id(4);
         usuario.setRespuesta3(dto.getRespuesta3());
         usuario.setBloqueado(false);
-        usuario.setNombreCompleto(dto.getApellidosNombres());
+
+        String nombreCompleto = (dto.getApellidosNombres() == null || dto.getApellidosNombres().isBlank())
+                ? (dto.getApellidos() + " " + dto.getNombres()).trim()
+                : dto.getApellidosNombres().trim();
+
+        usuario.setNombreCompleto(nombreCompleto);
         usuario.setRegistrado(true);
 
-        // 👉 Generar código de activación
         String codigo = UUID.randomUUID().toString();
         usuario.setCodigoActivacion(codigo);
 
-        // 👉 Guardar usuario
-        usuario = usuarioRepository.save(usuario); // se actualiza con ID
+        usuario = usuarioRepository.save(usuario);
 
         // 2. Crear y guardar solicitante
         Solicitante solicitante = new Solicitante();
@@ -78,12 +77,17 @@ public class RegistroService {
         solicitante.setNumeroIdentificacion(dto.getNumeroIdentificacion());
         solicitante.setApellidoCompleto(dto.getApellidos());
         solicitante.setNombreCompleto(dto.getNombres());
-        solicitante.setApellidoNombre(dto.getApellidosNombres());
+        solicitante.setApellidoNombre(nombreCompleto);
         solicitante.setFechaNacimiento(LocalDate.parse(dto.getFechaNacimiento()));
         solicitante.setCatalogosGeneroId(dto.getCodigoGenero());
         solicitante.setCatalogosEstadoCivilId(dto.getCodigoEstadoCivil());
         solicitante.setCatalogosEtniaId(dto.getCodigoEtnia());
-        solicitante.setDiscapacidad(false);
+
+        Boolean discapacidadFlag = (dto.getPorcentajeDiscapacidad() != null && dto.getPorcentajeDiscapacidad() > 0);
+        solicitante.setDiscapacidad(discapacidadFlag);
+        solicitante.setCatalogosTipoDiscapacidadId(dto.getCodigoTipoDiscapacidad());
+        solicitante.setPorcentajeDiscapacidad(dto.getPorcentajeDiscapacidad());
+
         solicitante.setCatalogosNacionalidadId(dto.getCodigoNacionalidad());
         solicitante.setTelefonoConvencional(dto.getTelefonoConvencional());
         solicitante.setTelefonoCelular1(dto.getCelular());
@@ -106,17 +110,17 @@ public class RegistroService {
         solicitante.setEstado(true);
         solicitante.setLugarNacimiento(dto.getLugarNacimiento());
         solicitante.setOrigenManual(false);
+
+
         solicitanteRepository.save(solicitante);
 
-        String url = frontendActivacionUrl;
         String enlace = frontendActivacionUrl + "?id=" + usuario.getId() + "&codigo=" + codigo;
 
         emailService.enviarCorreoActivacion(
-            usuario.getCorreoPrincipal(),
-            usuario.getApellidos() + " " + usuario.getNombres(),
-            usuario.getNumeroIdentificacion(),
-            enlace
-        );
+                usuario.getCorreoPrincipal(),
+                usuario.getApellidos() + " " + usuario.getNombres(),
+                usuario.getNumeroIdentificacion(),
+                enlace);
     }
 
     private int mapTipoIdentificacion(String tipo) {
@@ -131,5 +135,4 @@ public class RegistroService {
                 return 913;
         }
     }
-
 }

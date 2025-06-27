@@ -19,7 +19,6 @@ public class UsuarioSolicitanteDTO {
     private String apellidosNombres;
     private String clave;
 
-
     // Datos para la tabla solicitantes
     private String fechaNacimiento;
     private Integer codigoGenero;
@@ -43,4 +42,7 @@ public class UsuarioSolicitanteDTO {
     private Integer codigoProvinciaResidencia;
     private Integer codPaisResidencia;
     private String lugarNacimiento;
+    private Boolean discapacidad;
+    private Integer codigoTipoDiscapacidad;
+    private Integer porcentajeDiscapacidad;
 }

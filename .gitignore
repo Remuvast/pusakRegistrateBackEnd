@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar archivos compilados
+*.class
+/target/
+/generated/
+/src/**/wsdl/generated/

@@ -144,6 +144,29 @@
           <target>11</target>
         </configuration>
       </plugin>
+
+      <plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>jaxws-maven-plugin</artifactId>
+  <version>2.6</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>wsimport</goal>
+      </goals>
+      <configuration>
+        <wsdlUrls>
+          <wsdlUrl>https://www.bsg.gob.ec/sw/MSP/BSGSW01_Consultar_Discapacidad?wsdl</wsdlUrl>
+        </wsdlUrls>
+        <packageName>com.example.restapi.wsdl.generated</packageName>
+        <sourceDestDir>${project.build.directory}/generated-sources/wsdl</sourceDestDir>
+        <keep>true</keep>
+        <xnocompile>true</xnocompile>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+
     </plugins>
   </build>
 

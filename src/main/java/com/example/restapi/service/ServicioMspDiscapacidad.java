@@ -41,15 +41,21 @@ public class ServicioMspDiscapacidad {
             // Paso 5: Llamar al servicio
             ResultadoDiscapacitado respuesta = port.buscarPersonaConDiscapacidad(datosAcceso);
 
-            if (respuesta != null && respuesta.getCodigoConadis() != null) {
+            if (respuesta != null) {
                 resultado.setWsDisponible(true);
-                resultado.setValor(respuesta.getCodigoConadis());
-                resultado.setTipo(respuesta.getDeficienciaPredomina());
-                resultado.setPorcentaje(
-                    respuesta.getPorcentajeDiscapacidad()
-                        .replace("Í", "I")
-                        .replace("Ó", "O")
-                );
+
+                if (respuesta.getCodigoConadis() != null) {
+                    resultado.setValor(respuesta.getCodigoConadis());
+                    resultado.setTipo(respuesta.getDeficienciaPredomina());
+                    resultado.setPorcentaje(
+                            respuesta.getPorcentajeDiscapacidad()
+                                    .replace("Í", "I")
+                                    .replace("Ó", "O"));
+                } else {
+                    resultado.setValor(null);
+                    resultado.setTipo(null);
+                    resultado.setPorcentaje(null);
+                }
             } else {
                 resultado.setWsDisponible(false);
             }

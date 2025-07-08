@@ -21,7 +21,8 @@ docker-build:
 # Ejecuta el contenedor en el puerto especificado
 run: check-port
 	@echo "🚀 Ejecutando contenedor..."
-	docker run --rm -p $(PORT):8080 $(SERVICE)
+	docker run --rm -p $(PORT):8080 --network pusak-net $(SERVICE)
+
 
 # Verifica contenedores activos
 ps:

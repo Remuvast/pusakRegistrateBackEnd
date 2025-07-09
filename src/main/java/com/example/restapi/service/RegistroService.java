@@ -8,17 +8,15 @@ import com.example.restapi.becas.model.Solicitante;
 import com.example.restapi.becas.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class RegistroService {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private EmailService emailService;
@@ -40,7 +38,7 @@ public class RegistroService {
         usuario.setTipoIdentificacion(dto.getTipoIdentificacion());
         usuario.setNumeroIdentificacion(dto.getNumeroIdentificacion());
         usuario.setUsername(dto.getNumeroIdentificacion());
-        usuario.setClave(passwordEncoder.encode(dto.getClave()));
+        usuario.setClave(hashSHA512(dto.getClave()));
         usuario.setCorreoPrincipal(dto.getCorreoPrincipal());
         usuario.setCorreoAlterno(dto.getCorreoAlterno());
         usuario.setFechaExpiracionClave(LocalDate.now().plusYears(1));
@@ -135,4 +133,19 @@ public class RegistroService {
                 return 913;
         }
     }
+
+    private String hashSHA512(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            byte[] hashBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generando hash SHA-512", e);
+        }
+    }
+
 }

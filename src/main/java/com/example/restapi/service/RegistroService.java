@@ -138,6 +138,16 @@ public class RegistroService {
         solicitante.setLugarNacimiento(dto.getLugarNacimiento());
         solicitante.setOrigenManual(false);
 
+        LocalDate expiracion = LocalDate.now().plusYears(1);
+System.out.println("FECHA CALCULADA: " + expiracion);
+usuario.setFechaExpiracionClave(expiracion);
+
+// Imprime todo el usuario
+System.out.println(usuario);
+
+usuario = usuarioRepository.save(usuario);
+
+
         solicitanteRepository.save(solicitante);
 
         String enlace = frontendActivacionUrl + "?id=" + usuario.getId() + "&codigo=" + codigo;

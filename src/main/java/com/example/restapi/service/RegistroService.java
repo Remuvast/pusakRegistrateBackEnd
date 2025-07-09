@@ -2,6 +2,9 @@ package com.example.restapi.service;
 
 import com.example.restapi.dto.UsuarioSolicitanteDTO;
 import com.example.restapi.service.EmailService;
+import com.example.restapi.usuarios.model.Acceso;
+import com.example.restapi.usuarios.repository.AccesoRepository;
+import com.example.restapi.usuarios.repository.UsuariosAplicacionesRepository;
 import com.example.restapi.usuarios.model.Usuario;
 import com.example.restapi.usuarios.repository.UsuariosRepository;
 import com.example.restapi.becas.model.Solicitante;
@@ -19,6 +22,12 @@ import java.nio.charset.StandardCharsets;
 public class RegistroService {
 
     @Autowired
+    private UsuariosAplicacionesRepository usuariosAplicacionesRepository;
+
+    @Autowired
+    private AccesoRepository accesoRepository;
+
+    @Autowired
     private EmailService emailService;
 
     @Autowired
@@ -31,7 +40,7 @@ public class RegistroService {
     private String frontendActivacionUrl;
 
     public void registrar(UsuarioSolicitanteDTO dto) {
-        // 1. Crear y configurar el usuario
+        // Crear y configurar el usuario
         Usuario usuario = new Usuario();
         usuario.setNombres(dto.getNombres());
         usuario.setApellidos(dto.getApellidos());
@@ -47,7 +56,7 @@ public class RegistroService {
         usuario.setUsuarioCreacion(dto.getNumeroIdentificacion());
         usuario.setFechaCreacion(LocalDate.now());
         usuario.setVigente(true);
-        usuario.setActivo(false); // Desactivado hasta activar vía email
+        usuario.setActivo(false);
         usuario.setTiposUsuariosId(3);
         usuario.setPreguntas1Id(2);
         usuario.setRespuesta1(dto.getRespuesta1());
@@ -60,7 +69,6 @@ public class RegistroService {
         String nombreCompleto = (dto.getApellidosNombres() == null || dto.getApellidosNombres().isBlank())
                 ? (dto.getApellidos() + " " + dto.getNombres()).trim()
                 : dto.getApellidosNombres().trim();
-
         usuario.setNombreCompleto(nombreCompleto);
         usuario.setRegistrado(true);
 
@@ -69,7 +77,25 @@ public class RegistroService {
 
         usuario = usuarioRepository.save(usuario);
 
-        // 2. Crear y guardar solicitante
+        // Insertar Acceso
+        Long usuariosAplicacionesId = usuariosAplicacionesRepository
+                .findIdByNumeroIdentificacion(dto.getNumeroIdentificacion());
+
+        if (usuariosAplicacionesId == null) {
+            throw new RuntimeException("No se encontró usuarios_aplicaciones para este usuario.");
+        }
+
+        Acceso acceso = new Acceso();
+        acceso.setUsuariosAplicacionesId(usuariosAplicacionesId);
+        acceso.setRolesId(2);
+        acceso.setUsuarioCreacion("admin");
+        acceso.setFechaCreacion(LocalDate.now());
+        acceso.setUsuarioActualizacion(null);
+        acceso.setVigente(true);
+
+        accesoRepository.save(acceso);
+
+        // Crear y guardar solicitante
         Solicitante solicitante = new Solicitante();
         solicitante.setCatalogosTipoIdentificacionId(mapTipoIdentificacion(dto.getTipoIdentificacion()));
         solicitante.setNumeroIdentificacion(dto.getNumeroIdentificacion());
@@ -80,12 +106,10 @@ public class RegistroService {
         solicitante.setCatalogosGeneroId(dto.getCodigoGenero());
         solicitante.setCatalogosEstadoCivilId(dto.getCodigoEstadoCivil());
         solicitante.setCatalogosEtniaId(dto.getCodigoEtnia());
-
         Boolean discapacidadFlag = (dto.getPorcentajeDiscapacidad() != null && dto.getPorcentajeDiscapacidad() > 0);
         solicitante.setDiscapacidad(discapacidadFlag);
         solicitante.setCatalogosTipoDiscapacidadId(dto.getCodigoTipoDiscapacidad());
         solicitante.setPorcentajeDiscapacidad(dto.getPorcentajeDiscapacidad());
-
         solicitante.setCatalogosNacionalidadId(dto.getCodigoNacionalidad());
         solicitante.setTelefonoConvencional(dto.getTelefonoConvencional());
         solicitante.setTelefonoCelular1(dto.getCelular());
@@ -109,7 +133,6 @@ public class RegistroService {
         solicitante.setLugarNacimiento(dto.getLugarNacimiento());
         solicitante.setOrigenManual(false);
 
-
         solicitanteRepository.save(solicitante);
 
         String enlace = frontendActivacionUrl + "?id=" + usuario.getId() + "&codigo=" + codigo;
@@ -123,14 +146,10 @@ public class RegistroService {
 
     private int mapTipoIdentificacion(String tipo) {
         switch (tipo.toUpperCase()) {
-            case "CÉDULA":
-                return 913;
-            case "DNI":
-                return 912;
-            case "PASAPORTE":
-                return 914;
-            default:
-                return 913;
+            case "CÉDULA": return 913;
+            case "DNI": return 912;
+            case "PASAPORTE": return 914;
+            default: return 913;
         }
     }
 
@@ -147,5 +166,4 @@ public class RegistroService {
             throw new RuntimeException("Error generando hash SHA-512", e);
         }
     }
-
 }

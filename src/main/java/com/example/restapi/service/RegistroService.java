@@ -51,7 +51,6 @@ public class RegistroService {
         usuario.setClave(hashSHA512(dto.getClave()));
         usuario.setCorreoPrincipal(dto.getCorreoPrincipal());
         usuario.setCorreoAlterno(dto.getCorreoAlterno());
-        usuario.setFechaExpiracionClave(LocalDate.now().plusYears(1));
         usuario.setInstitucionesId(2);
         usuario.setPrimeraVez(true);
         usuario.setUsuarioCreacion(dto.getNumeroIdentificacion());
@@ -139,14 +138,9 @@ public class RegistroService {
         solicitante.setOrigenManual(false);
 
         LocalDate expiracion = LocalDate.now().plusYears(1);
-System.out.println("FECHA CALCULADA: " + expiracion);
-usuario.setFechaExpiracionClave(expiracion);
+        usuario.setFechaExpiracionClave(expiracion);
 
-// Imprime todo el usuario
-System.out.println(usuario);
-
-usuario = usuarioRepository.save(usuario);
-
+        usuario = usuarioRepository.save(usuario);
 
         solicitanteRepository.save(solicitante);
 
@@ -161,10 +155,14 @@ usuario = usuarioRepository.save(usuario);
 
     private int mapTipoIdentificacion(String tipo) {
         switch (tipo.toUpperCase()) {
-            case "CÉDULA": return 913;
-            case "DNI": return 912;
-            case "PASAPORTE": return 914;
-            default: return 913;
+            case "CÉDULA":
+                return 913;
+            case "DNI":
+                return 912;
+            case "PASAPORTE":
+                return 914;
+            default:
+                return 913;
         }
     }
 

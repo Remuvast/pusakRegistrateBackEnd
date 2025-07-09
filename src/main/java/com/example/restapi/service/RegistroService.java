@@ -3,9 +3,10 @@ package com.example.restapi.service;
 import com.example.restapi.dto.UsuarioSolicitanteDTO;
 import com.example.restapi.service.EmailService;
 import com.example.restapi.usuarios.model.Acceso;
+import com.example.restapi.usuarios.model.Usuario;
+import com.example.restapi.usuarios.model.UsuarioAplicacion;
 import com.example.restapi.usuarios.repository.AccesoRepository;
 import com.example.restapi.usuarios.repository.UsuariosAplicacionesRepository;
-import com.example.restapi.usuarios.model.Usuario;
 import com.example.restapi.usuarios.repository.UsuariosRepository;
 import com.example.restapi.becas.model.Solicitante;
 import com.example.restapi.becas.repository.SolicitanteRepository;
@@ -40,7 +41,7 @@ public class RegistroService {
     private String frontendActivacionUrl;
 
     public void registrar(UsuarioSolicitanteDTO dto) {
-        // Crear y configurar el usuario
+        // Crear usuario
         Usuario usuario = new Usuario();
         usuario.setNombres(dto.getNombres());
         usuario.setApellidos(dto.getApellidos());
@@ -77,16 +78,20 @@ public class RegistroService {
 
         usuario = usuarioRepository.save(usuario);
 
-        // Insertar Acceso
-        Long usuariosAplicacionesId = usuariosAplicacionesRepository
-                .findIdByNumeroIdentificacion(dto.getNumeroIdentificacion());
+        // Crear UsuarioAplicacion
+        UsuarioAplicacion usuarioAplicacion = new UsuarioAplicacion();
+        usuarioAplicacion.setUsuario(usuario);
+        usuarioAplicacion.setAplicacionesId(2); // APLICACION POR DEFECTO
+        usuarioAplicacion.setUsuarioCreacion(dto.getNumeroIdentificacion());
+        usuarioAplicacion.setFechaCreacion(LocalDate.now());
+        usuarioAplicacion.setUsuarioActualizacion(null);
+        usuarioAplicacion.setVigente(true);
 
-        if (usuariosAplicacionesId == null) {
-            throw new RuntimeException("No se encontró usuarios_aplicaciones para este usuario.");
-        }
+        usuarioAplicacion = usuariosAplicacionesRepository.save(usuarioAplicacion);
 
+        // Crear Acceso
         Acceso acceso = new Acceso();
-        acceso.setUsuariosAplicacionesId(usuariosAplicacionesId);
+        acceso.setUsuariosAplicacionesId(usuarioAplicacion.getId());
         acceso.setRolesId(2);
         acceso.setUsuarioCreacion("admin");
         acceso.setFechaCreacion(LocalDate.now());
@@ -95,7 +100,7 @@ public class RegistroService {
 
         accesoRepository.save(acceso);
 
-        // Crear y guardar solicitante
+        // Crear Solicitante
         Solicitante solicitante = new Solicitante();
         solicitante.setCatalogosTipoIdentificacionId(mapTipoIdentificacion(dto.getTipoIdentificacion()));
         solicitante.setNumeroIdentificacion(dto.getNumeroIdentificacion());

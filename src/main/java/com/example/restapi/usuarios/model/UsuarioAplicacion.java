@@ -1,6 +1,7 @@
 package com.example.restapi.usuarios.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "usuarios_aplicaciones")
@@ -11,10 +12,28 @@ public class UsuarioAplicacion {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuarios_id")
+    @JoinColumn(name = "usuarios_id", nullable = false)
     private Usuario usuario;
 
-    // Otros campos si los necesitas
+    @Column(name = "aplicaciones_id", nullable = false)
+    private Integer aplicacionesId;
+
+    @Column(name = "usuario_creacion", nullable = false)
+    private String usuarioCreacion;
+
+    @Column(name = "fecha_creacion", nullable = false)
+    private LocalDate fechaCreacion;
+
+    @Column(name = "usuario_actualizacion")
+    private String usuarioActualizacion;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDate fechaActualizacion;
+
+    @Column(name = "vigente", nullable = false)
+    private Boolean vigente;
+
+    // Getters y Setters
 
     public Long getId() {
         return id;
@@ -30,5 +49,53 @@ public class UsuarioAplicacion {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Integer getAplicacionesId() {
+        return aplicacionesId;
+    }
+
+    public void setAplicacionesId(Integer aplicacionesId) {
+        this.aplicacionesId = aplicacionesId;
+    }
+
+    public String getUsuarioCreacion() {
+        return usuarioCreacion;
+    }
+
+    public void setUsuarioCreacion(String usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getUsuarioActualizacion() {
+        return usuarioActualizacion;
+    }
+
+    public void setUsuarioActualizacion(String usuarioActualizacion) {
+        this.usuarioActualizacion = usuarioActualizacion;
+    }
+
+    public LocalDate getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDate fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public Boolean getVigente() {
+        return vigente;
+    }
+
+    public void setVigente(Boolean vigente) {
+        this.vigente = vigente;
     }
 }

@@ -14,9 +14,15 @@ public class DatosRegistroCivilDTO {
     private String apellidosCompletos;
     private String nombresApellidos;
     private List<Campo> datosGlobales;
+    private String lugarNacimiento;
+    private String provinciaNacimiento;
+    private String cantonNacimiento;
+    private String parroquiaNacimiento;
 
     private boolean nombreBloqueado;
-    public DatosRegistroCivilDTO() {}
+
+    public DatosRegistroCivilDTO() {
+    }
 
     // Getters y setters
     public String getCedula() {
@@ -105,5 +111,37 @@ public class DatosRegistroCivilDTO {
 
     public void setNombreBloqueado(boolean nombreBloqueado) {
         this.nombreBloqueado = nombreBloqueado;
+    }
+
+    public void setLugarNacimiento(String lugarNacimiento) {
+        this.lugarNacimiento = lugarNacimiento;
+    }
+
+    public String getLugarNacimiento() {
+        return lugarNacimiento;
+    }
+
+    public void setProvinciaNacimiento(String provinciaNacimiento) {
+        this.provinciaNacimiento = provinciaNacimiento;
+    }
+
+    public String getProvinciaNacimiento() {
+        return provinciaNacimiento;
+    }
+
+    public void setCantonNacimiento(String cantonNacimiento) {
+        this.cantonNacimiento = cantonNacimiento;
+    }
+
+    public String getCantonNacimiento() {
+        return cantonNacimiento;
+    }
+
+    public void setParroquiaNacimiento(String parroquiaNacimiento) {
+        this.parroquiaNacimiento = parroquiaNacimiento;
+    }
+
+    public String getParroquiaNacimiento() {
+        return parroquiaNacimiento;
     }
 }

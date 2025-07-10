@@ -38,27 +38,38 @@ public class ServicioRegistroCivil {
     private static final Map<String, String> REGLAS_CONDICION = new HashMap<>();
     static {
         REGLAS_CONDICION.put("FALLECIDO", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_FALLECIDO);
-        REGLAS_CONDICION.put("EXTRANJERO FALLECIDO", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_FALLECIDO);
-        REGLAS_CONDICION.put("CÉDULA CADUCADA POR ANULACIÓN", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CADUCADO_X_ANULACION);
-        REGLAS_CONDICION.put("CEDULA CADUCADA POR ANULACION", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CADUCADO_X_ANULACION);
-        REGLAS_CONDICION.put("EXTRANJERO NO CEDULADO", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_NO_CEDULADO);
-        REGLAS_CONDICION.put("CÉDULA INVALIDADA POR CONTRAVENCIÓN", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CONTRAVENCION);
-        REGLAS_CONDICION.put("CEDULA INVALIDADA POR CONTRAVENCION", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CONTRAVENCION);
-        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR CONTRAVENCIÓN", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_CONTRAVENCION);
-        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR CONTRAVENCION", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_CONTRAVENCION);
-        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR EXPIRACIÓN", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_EXPIRACION);
-        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR EXPIRACION", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_EXPIRACION);
-        REGLAS_CONDICION.put("INSCRIPCIÓN EN PROCESO", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_INSCRIPCION_PROCESO);
-        REGLAS_CONDICION.put("INSCRIPCION EN PROCESO", Constantes.ConsumoWebServices.Inscripcion.MENSAJE_INSCRIPCION_PROCESO);
+        REGLAS_CONDICION.put("EXTRANJERO FALLECIDO",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_FALLECIDO);
+        REGLAS_CONDICION.put("CÉDULA CADUCADA POR ANULACIÓN",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CADUCADO_X_ANULACION);
+        REGLAS_CONDICION.put("CEDULA CADUCADA POR ANULACION",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CADUCADO_X_ANULACION);
+        REGLAS_CONDICION.put("EXTRANJERO NO CEDULADO",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_NO_CEDULADO);
+        REGLAS_CONDICION.put("CÉDULA INVALIDADA POR CONTRAVENCIÓN",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CONTRAVENCION);
+        REGLAS_CONDICION.put("CEDULA INVALIDADA POR CONTRAVENCION",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_CONTRAVENCION);
+        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR CONTRAVENCIÓN",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_CONTRAVENCION);
+        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR CONTRAVENCION",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_CONTRAVENCION);
+        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR EXPIRACIÓN",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_EXPIRACION);
+        REGLAS_CONDICION.put("EXTRANJERO INVALIDADO POR EXPIRACION",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_EXTRANJERO_EXPIRACION);
+        REGLAS_CONDICION.put("INSCRIPCIÓN EN PROCESO",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_INSCRIPCION_PROCESO);
+        REGLAS_CONDICION.put("INSCRIPCION EN PROCESO",
+                Constantes.ConsumoWebServices.Inscripcion.MENSAJE_INSCRIPCION_PROCESO);
     }
 
     public DatosRegistroCivilDTO consultarFichaGeneral(String cedula) {
         // 1) Conflict si ya existe en BD
         if (usuarioRepository.existsByNumeroIdentificacion(cedula)) {
             throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "El usuario con cédula " + cedula + " ya está registrado en el sistema."
-            );
+                    HttpStatus.CONFLICT,
+                    "El usuario con cédula " + cedula + " ya está registrado en el sistema.");
         }
 
         try {
@@ -75,7 +86,7 @@ public class ServicioRegistroCivil {
             // 3) Configurar timeout 10s
             BindingProvider bp = (BindingProvider) port;
             bp.getRequestContext().put("javax.xml.ws.client.connectionTimeout", "10000");
-            bp.getRequestContext().put("javax.xml.ws.client.receiveTimeout",    "10000");
+            bp.getRequestContext().put("javax.xml.ws.client.receiveTimeout", "10000");
 
             // 4) Llamada al WS
             GetFichaGeneral parametros = new GetFichaGeneral();
@@ -94,18 +105,16 @@ public class ServicioRegistroCivil {
             // 7) Timeout (SocketTimeout) → 503 con tu constante
             Throwable cause = wse.getCause();
             if (cause instanceof SocketTimeoutException
-             || (cause != null && cause.getMessage().contains("Read timed out"))) {
+                    || (cause != null && cause.getMessage().contains("Read timed out"))) {
                 throw new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    Constantes.ConsumoWebServices.SERVICIO_NO_DISPONIBLE
-                );
+                        HttpStatus.SERVICE_UNAVAILABLE,
+                        Constantes.ConsumoWebServices.SERVICIO_NO_DISPONIBLE);
             }
             // Otro error SOAP → 500 genérico
             throw new ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Ocurrió un error al consultar la cédula: " + wse.getMessage(),
-                wse
-            );
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Ocurrió un error al consultar la cédula: " + wse.getMessage(),
+                    wse);
         } catch (ResponseStatusException ex) {
             // Re-lanzar 409 o 503
             throw ex;
@@ -113,19 +122,18 @@ public class ServicioRegistroCivil {
             // Cualquier otro → 500
             ex.printStackTrace();
             throw new ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Ocurrió un error al consultar la cédula: " + ex.getMessage(),
-                ex
-            );
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Ocurrió un error al consultar la cédula: " + ex.getMessage(),
+                    ex);
         }
     }
 
     private void validarCondicion(List<Campo> campos) {
         String condicion = campos.stream()
-            .filter(c -> "condicionCiudadano".equalsIgnoreCase(c.getNombre()))
-            .map(Campo::getValor)
-            .findFirst()
-            .orElse(null);
+                .filter(c -> "condicionCiudadano".equalsIgnoreCase(c.getNombre()))
+                .map(Campo::getValor)
+                .findFirst()
+                .orElse(null);
 
         if (condicion != null) {
             String mensaje = REGLAS_CONDICION.get(condicion.toUpperCase());
@@ -141,8 +149,8 @@ public class ServicioRegistroCivil {
         for (Campo campo : campos) {
             String valor = campo.getValor();
 
-            //visualizar datos globales del registro civil
-          dto.setDatosGlobales(campos);
+            // visualizar datos globales del registro civil
+            // dto.setDatosGlobales(campos);
 
             switch (campo.getNombre()) {
                 case "cedula":
@@ -154,7 +162,7 @@ public class ServicioRegistroCivil {
                     String[] partes = valor.trim().split("\\s+");
                     StringBuilder nombres = new StringBuilder();
                     StringBuilder apellidos = new StringBuilder();
-                    String[] palabrasCompuestas = {"DE", "DEL", "LA", "LOS", "SAN", "SANTA", "DA"};
+                    String[] palabrasCompuestas = { "DE", "DEL", "LA", "LOS", "SAN", "SANTA", "DA" };
                     int numeroDeApellidos = 1;
                     String palabraCompuesta = "";
                     boolean terminarConcatenacion;
@@ -202,13 +210,28 @@ public class ServicioRegistroCivil {
                 case "estadoCivil":
                     dto.setEstadoCivil(valor);
                     break;
+
+                case "lugarNacimiento":
+                    if (valor != null && !valor.isEmpty()) {
+                        String[] partesLugar = valor.split("/");
+                        if (partesLugar.length >= 1) {
+                            dto.setProvinciaNacimiento(partesLugar[0]);
+                        }
+                        if (partesLugar.length >= 2) {
+                            dto.setCantonNacimiento(partesLugar[1]);
+                        }
+                        if (partesLugar.length >= 3) {
+                            dto.setParroquiaNacimiento(partesLugar[2]);
+                        }
+                    }
+                    break;
+
             }
         }
 
         String apellidosCompletos = String.join(" ",
                 dto.getApellidoPaterno() != null ? dto.getApellidoPaterno() : "",
-                dto.getApellidoMaterno() != null ? dto.getApellidoMaterno() : ""
-        ).trim();
+                dto.getApellidoMaterno() != null ? dto.getApellidoMaterno() : "").trim();
         dto.setApellidosCompletos(apellidosCompletos);
 
         return dto;

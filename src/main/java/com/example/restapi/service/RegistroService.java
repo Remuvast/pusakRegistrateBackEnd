@@ -52,7 +52,7 @@ public class RegistroService {
         usuario.setCorreoPrincipal(dto.getCorreoPrincipal());
         usuario.setCorreoAlterno(dto.getCorreoAlterno());
         usuario.setInstitucionesId(2);
-        usuario.setPrimeraVez(true);
+        usuario.setPrimeraVez(false);
         usuario.setUsuarioCreacion(dto.getNumeroIdentificacion());
         usuario.setFechaCreacion(LocalDate.now());
         usuario.setVigente(true);

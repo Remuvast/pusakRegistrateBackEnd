@@ -13,15 +13,19 @@ check-port:
 		echo "✅ Puerto $(PORT) disponible."; \
 	fi
 
-# Construye la imagen Docker usando multi-stage build
 docker-build:
 	@echo "🐳 Construyendo imagen Docker..."
 	docker build -t $(SERVICE) .
 
-# Ejecuta el contenedor en el puerto especificado
+# Ejecuta el contenedor en el puerto especificado y en la red compartida
 run: check-port
-	@echo "🚀 Ejecutando contenedor..."
-	docker run --rm -p $(PORT):8080 --network pusak-net $(SERVICE)
+	@echo "🚀 Ejecutando contenedor en red 'pusak-net'..."
+	docker network create pusak-net || true
+	docker run --rm \
+		--name $(SERVICE) \
+		--network pusak-net \
+		-p 8080:8080 \
+		$(SERVICE)
 
 
 # Verifica contenedores activos

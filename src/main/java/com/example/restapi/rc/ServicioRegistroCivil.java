@@ -66,11 +66,11 @@ public class ServicioRegistroCivil {
 
     public DatosRegistroCivilDTO consultarFichaGeneral(String cedula) {
         // 1) Conflict si ya existe en BD
-        if (usuarioRepository.existsByNumeroIdentificacion(cedula)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "El usuario con cédula " + cedula + " ya está registrado en el sistema.");
-        }
+        //if (usuarioRepository.existsByNumeroIdentificacion(cedula)) {
+           // throw new ResponseStatusException(
+             //       HttpStatus.CONFLICT,
+               //     "El usuario con cédula " + cedula + " ya está registrado en el sistema.");
+        //}
 
         try {
             System.out.println("✅ Iniciando consulta para cédula: " + cedula);

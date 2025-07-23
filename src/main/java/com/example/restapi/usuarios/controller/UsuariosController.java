@@ -21,7 +21,16 @@ public class UsuariosController {
         return ResponseEntity.ok(Map.of(
                 "correo", correo,
                 "existe", existe,
-                "mensaje", existe ? "El correo ya está registrado." : "El correo está disponible."
-        ));
+                "mensaje", existe ? "El correo ya está registrado." : "El correo está disponible."));
+    }
+
+    @GetMapping("/existe")
+    public ResponseEntity<?> existeCedula(@RequestParam String identificacion) {
+        boolean existe = usuariosRepository.existsByNumeroIdentificacion(identificacion);
+        return ResponseEntity.ok(Map.of(
+            "numeroIdentificacion", identificacion,
+            "existe", existe,
+            "mensaje", existe ? "El usuario ya está registrado." : "El usuario está disponible."
+            ));
     }
 }

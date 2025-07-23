@@ -5,6 +5,7 @@ import com.example.restapi.becas.repository.GenderRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/catalogos")
@@ -18,6 +19,9 @@ public class GenderController {
 
     @GetMapping("/generos")
     public List<GenderType> getTiposGeneros() {
-        return tipoRepo.findByTiposCatalogosId(10L);
+        return tipoRepo.findByTiposCatalogosId(10L).stream()
+                .filter(g -> !"GSI".equals(g.getCodigo()))
+                .collect(Collectors.toList());
     }
+
 }

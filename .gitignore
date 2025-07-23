@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
+# Ignorar todos los archivos application.properties
+**/src/main/resources/application.properties
+
 ### STS ###
 .apt_generated
 .classpath
@@ -37,3 +41,6 @@ build/
 /target/
 /generated/
 /src/**/wsdl/generated/
+# Ignorar archivos de configuracion de docker
+makefile
+# Ignorar archivos de configuracion de maven

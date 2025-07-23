@@ -17,6 +17,11 @@ public class ServicioMspDiscapacidad {
     public DiscapacidadDTO consultar(String cedula) {
         DiscapacidadDTO resultado = new DiscapacidadDTO();
 
+        if (cedula == null || !cedula.matches("\\d{10}")) {
+            resultado.setWsDisponible(false);
+            return resultado;
+        }
+
         try {
             // Paso 1: Obtener token
             PermissionClient permissionClient = new PermissionClient();

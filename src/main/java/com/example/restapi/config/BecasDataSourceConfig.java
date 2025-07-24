@@ -2,6 +2,7 @@ package com.example.restapi.config;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -27,7 +28,9 @@ public class BecasDataSourceConfig {
     @Bean(name = "becasDataSource")
     @ConfigurationProperties(prefix = "second.datasource")
     public DataSource becasDataSource() {
-        return DataSourceBuilder.create().build();
+        return DataSourceBuilder.create()
+                .type(HikariDataSource.class)
+                .build();
     }
 
     @Bean(name = "becasEntityManagerFactory")

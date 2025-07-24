@@ -2,6 +2,7 @@ package com.example.restapi.config;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,12 +25,13 @@ import javax.persistence.EntityManagerFactory;
 )
 public class UsuariosDataSourceConfig {
 
-
     @Primary
     @Bean(name = "usuariosDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource") // 👈 Este prefix debe coincidir con tu application.properties
+    @ConfigurationProperties(prefix = "spring.datasource") // 👈 Este prefix debe coincidir con application.properties
     public DataSource usuariosDataSource() {
-        return DataSourceBuilder.create().build();
+        return DataSourceBuilder.create()
+                .type(HikariDataSource.class) // ✅ Indicamos Hikari
+                .build();
     }
 
     @Primary
@@ -40,7 +42,7 @@ public class UsuariosDataSourceConfig {
 
         return builder
                 .dataSource(dataSource)
-                .packages("com.example.restapi.usuarios.model") // 👈 Modelos para esta base
+                .packages("com.example.restapi.usuarios.model") // ✅ Modelos para esta base
                 .persistenceUnit("usuarios")
                 .build();
     }

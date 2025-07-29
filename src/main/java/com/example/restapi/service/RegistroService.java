@@ -161,6 +161,8 @@ public class RegistroService {
                 return 912;
             case "PASAPORTE":
                 return 914;
+            case "CARNET DE REFUGIADO":
+                return 915;
             default:
                 return 913;
         }

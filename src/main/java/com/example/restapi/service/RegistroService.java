@@ -155,13 +155,13 @@ public class RegistroService {
 
     private int mapTipoIdentificacion(String tipo) {
         switch (tipo.toUpperCase()) {
-            case "CÉDULA":
+            case "CI":
                 return 913;
             case "DNI":
                 return 912;
-            case "PASAPORTE":
+            case "PAS":
                 return 914;
-            case "CARNET DE REFUGIADO":
+            case "CR":
                 return 915;
             default:
                 return 913;

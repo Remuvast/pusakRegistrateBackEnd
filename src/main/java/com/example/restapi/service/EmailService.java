@@ -47,7 +47,9 @@ public class EmailService {
             +     "judiciales a que hubiere lugar, de conformidad a lo dispuesto en el Código Orgánico "
             +     "Integral Penal.</p>"
             +   "<p>Atentamente,<br>"
-            +     "<strong>Secretaría de Educación Superior, Ciencia, Tecnología e Innovación</strong></p>"
+            //    rsmunoz Línea gráfica Senescyt a Minedec
+            +     "<strong>Ministerio de Educación, Deporte y Cultura</strong></p>"
+            //    "<strong>Secretaría de Educación Superior, Ciencia, Tecnología e Innovación</strong></p>"
             +   "<p style='font-size:small; color:gray;'>"
             +     "Las tildes han sido omitidas intencionalmente para evitar problemas de lectura."
             +   "</p>"

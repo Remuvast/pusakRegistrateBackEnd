@@ -1,6 +1,6 @@
 # Nombre del servicio Docker
 SERVICE=restapi-java
-PORT=8080
+PORT=8081
 
 # Verifica si el puerto 8080 está ocupado
 check-port:
@@ -24,7 +24,7 @@ run: check-port
 	docker run --rm \
 		--name $(SERVICE) \
 		--network pusak-net \
-		-p 8080:8080 \
+		-p 8081:8081 \
 		$(SERVICE)
 
 

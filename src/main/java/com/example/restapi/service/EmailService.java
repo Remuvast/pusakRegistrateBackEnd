@@ -62,7 +62,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(destinatario);
             helper.setSubject(asunto);
-            helper.setFrom("pusakregistro@senescyt.gob.ec", "Registro SENESCYT");
+            helper.setFrom("pusakregistro@educacion.gob.ec", "Registro MINEDEC");
             helper.setText(contenido, true);
         };
 

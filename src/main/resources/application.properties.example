@@ -6,7 +6,8 @@ spring.datasource.jdbc-url=jdbc:postgresql://10.10.100.11:5432/usuarios
 spring.datasource.username=pusak
 spring.datasource.password=pfd24@4HF;$d
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.hikari.maximum-pool-size=200
+spring.datasource.hikari.maximum-pool-size=200spring.datasource.username=pusak
+spring.datasource.password=pfd24@4HF;$d
 spring.datasource.hikari.minimum-idle=10
 spring.datasource.hikari.idle-timeout=30000
 spring.datasource.hikari.connection-timeout=30000

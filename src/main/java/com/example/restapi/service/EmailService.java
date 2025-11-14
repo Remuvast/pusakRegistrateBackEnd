@@ -1,4 +1,4 @@
-tpackage com.example.restapi.service;
+package com.example.restapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -62,7 +62,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(destinatario);
             helper.setSubject(asunto);
-            helper.setFrom("pusak.notificaciones@fomentoacademico.gob.ec", "Registro SENESCYT");
+            helper.setFrom("pusak.notificaciones@fomentoacademico.gob.ec", "Registro MINEDEC");
             helper.setText(contenido, true);
         };
 

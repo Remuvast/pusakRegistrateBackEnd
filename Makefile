@@ -2,7 +2,7 @@
 SERVICE=restapi-java
 PORT=8081
 
-# Verifica si el puerto 8080 está ocupado
+# Verifica si el puerto 8081 está ocupado
 check-port:
 	@echo "🔎 Verificando puerto $(PORT)..."
 	@if lsof -i :$(PORT) >/dev/null 2>&1; then \
@@ -19,14 +19,17 @@ docker-build:
 
 # Ejecuta el contenedor en el puerto especificado y en la red compartida
 run: check-port
-	@echo "🚀 Ejecutando contenedor en red 'pusak-net'..."
+	@echo "♻️  Eliminando contenedor anterior si existe..."
+	-docker rm -f $(SERVICE) 2>/dev/null || true
+
+	@echo "🚀 Ejecutando contenedor en red 'pusak-net' con reinicio automático..."
 	docker network create pusak-net || true
-	docker run --rm \
+	docker run -d \
 		--name $(SERVICE) \
+		--restart unless-stopped \
 		--network pusak-net \
 		-p 8081:8081 \
 		$(SERVICE)
-
 
 # Verifica contenedores activos
 ps:

@@ -1,8 +1,8 @@
 # Nombre del servicio Docker
 SERVICE=restapi-java
-PORT=8081
+PORT=8080
 
-# Verifica si el puerto 8081 está ocupado
+# Verifica si el puerto 8080 está ocupado
 check-port:
 	@echo "🔎 Verificando puerto $(PORT)..."
 	@if lsof -i :$(PORT) >/dev/null 2>&1; then \
@@ -28,7 +28,7 @@ run: check-port
 		--name $(SERVICE) \
 		--restart unless-stopped \
 		--network pusak-net \
-		-p 8081:8081 \
+		-p 8080:8080 \
 		$(SERVICE)
 
 # Verifica contenedores activos

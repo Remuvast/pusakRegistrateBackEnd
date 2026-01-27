@@ -1,3 +1,4 @@
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -5,18 +6,11 @@ target/
 !**/src/test/**/target/
 
 
-# Ignorar todos los archivos application.properties
-**/application.properties
-
-# Ignorar los archivos con puerto 8081 configurados en LOCAL
-docker-compose.yml
-Dockerfile
-Makefile
-
 # Nunca subir archivos example
 *_example*
 *example(LOCAL)*
 *example(PREyPRO)*
+application.properties.example
 
 ### STS ###
 .apt_generated

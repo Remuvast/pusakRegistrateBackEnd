@@ -10,7 +10,10 @@ target/
 *_example*
 *example(LOCAL)*
 *example(PREyPRO)*
-application.properties.example
+**/application.properties.example
+**/application_example(LOCAL).properties
+**/application_example(PRE).properties
+**/application_example(PRO).properties
 
 ### STS ###
 .apt_generated

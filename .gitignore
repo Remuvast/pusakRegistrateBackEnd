@@ -49,3 +49,9 @@ build/
 # Ignorar archivos de configuracion de docker
 makefile
 # Ignorar archivos de configuracion de maven
+
+# Archivos accidentales / basura
+systemctl*
+*status*
+[Help
+Running

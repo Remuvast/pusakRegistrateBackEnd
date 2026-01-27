@@ -13,6 +13,11 @@ docker-compose.yml
 Dockerfile
 Makefile
 
+# Nunca subir archivos example
+*_example*
+*example(LOCAL)*
+*example(PREyPRO)*
+
 ### STS ###
 .apt_generated
 .classpath

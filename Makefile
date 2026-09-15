@@ -81,5 +81,3 @@ down:
 	else \
 		echo "⛔ No hay contenedor activo para $(SERVICE)"; \
 	fi
-
-tiene menú contextual

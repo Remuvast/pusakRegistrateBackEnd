@@ -10,6 +10,12 @@ public interface UsuariosRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByCodigoActivacion(String codigo);
     Optional<Usuario> findByIdAndCodigoActivacion(Long id, String codigoActivacion);
     boolean existsByNumeroIdentificacion(String numeroIdentificacion);
-    boolean existsByCorreoPrincipal(String correo);
 
+    // renes.munoz - Postulaciones Validar Tipo de Usuario
+    boolean existsByNumeroIdentificacionAndTiposUsuariosId(
+            String numeroIdentificacion,
+            Integer tiposUsuariosId
+    );
+
+    boolean existsByCorreoPrincipal(String correo);
 }

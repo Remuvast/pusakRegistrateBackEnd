@@ -47,6 +47,12 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- JTA / Atomikos para transacciones distribuidas -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-jta-atomikos</artifactId>
+    </dependency>
+
     <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>

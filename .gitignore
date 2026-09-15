@@ -10,7 +10,6 @@ target/
 *_example*
 *example(LOCAL)*
 *example(PREyPRO)*
-/src/main/resources/application.properties.example
 /src/main/resources/application_example(LOCAL).properties
 /src/main/resources/application_example(PRE).properties
 /src/main/resources/application_example(PRO).properties
@@ -48,12 +47,12 @@ build/
 /target/
 /generated/
 /src/**/wsdl/generated/
-# Ignorar archivos de configuracion de docker
-makefile
-# Ignorar archivos de configuracion de maven
 
 # Archivos accidentales / basura
 systemctl*
 *status*
 [Help
 Running
+
+# Logs
+*.log

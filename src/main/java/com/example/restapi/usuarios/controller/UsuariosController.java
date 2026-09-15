@@ -24,13 +24,29 @@ public class UsuariosController {
                 "mensaje", existe ? "El correo ya está registrado." : "El correo está disponible."));
     }
 
+
+    // renes.munoz - Postulaciones Validar Tipo de Usuario
     @GetMapping("/existe")
     public ResponseEntity<?> existeCedula(@RequestParam String identificacion) {
-        boolean existe = usuariosRepository.existsByNumeroIdentificacion(identificacion);
+
+        // El registro realizado desde este formulario
+        // corresponde al usuario externo.
+        Integer tipoUsuarioExterno = 3;
+
+        boolean existe =
+                usuariosRepository.existsByNumeroIdentificacionAndTiposUsuariosId(
+                        identificacion,
+                        tipoUsuarioExterno
+                );
+
         return ResponseEntity.ok(Map.of(
-            "numeroIdentificacion", identificacion,
-            "existe", existe,
-            "mensaje", existe ? "El usuario ya está registrado." : "El usuario está disponible."
-            ));
+                "numeroIdentificacion", identificacion,
+                "existe", existe,
+                "mensaje", existe
+                        ? "El usuario ya está registrado."
+                        : "El usuario está disponible."
+        ));
     }
+
+
 }

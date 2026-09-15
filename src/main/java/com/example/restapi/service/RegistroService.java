@@ -1,7 +1,6 @@
 package com.example.restapi.service;
 
 import com.example.restapi.dto.UsuarioSolicitanteDTO;
-import com.example.restapi.service.EmailService;
 import com.example.restapi.usuarios.model.Acceso;
 import com.example.restapi.usuarios.model.Usuario;
 import com.example.restapi.usuarios.model.UsuarioAplicacion;
@@ -12,12 +11,16 @@ import com.example.restapi.becas.model.Solicitante;
 import com.example.restapi.becas.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.UUID;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.restapi.event.RegistroCreadoEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
 @Service
 public class RegistroService {
@@ -29,17 +32,15 @@ public class RegistroService {
     private AccesoRepository accesoRepository;
 
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
     private UsuariosRepository usuarioRepository;
 
     @Autowired
     private SolicitanteRepository solicitanteRepository;
 
-    @Value("${app.frontend.activacion.url}")
-    private String frontendActivacionUrl;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public void registrar(UsuarioSolicitanteDTO dto) {
         // Crear usuario
         Usuario usuario = new Usuario();
@@ -144,13 +145,15 @@ public class RegistroService {
 
         solicitanteRepository.save(solicitante);
 
-        String enlace = frontendActivacionUrl + "?id=" + usuario.getId() + "&codigo=" + codigo;
-
-        emailService.enviarCorreoActivacion(
-                usuario.getCorreoPrincipal(),
-                usuario.getApellidos() + " " + usuario.getNombres(),
-                usuario.getNumeroIdentificacion(),
-                enlace);
+        eventPublisher.publishEvent(
+                new RegistroCreadoEvent(
+                        usuario.getId(),
+                        codigo,
+                        usuario.getCorreoPrincipal(),
+                        nombreCompleto,
+                        usuario.getNumeroIdentificacion()
+                )
+        );
     }
 
     private int mapTipoIdentificacion(String tipo) {

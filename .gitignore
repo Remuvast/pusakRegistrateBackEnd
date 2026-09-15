@@ -10,6 +10,8 @@ target/
 *_example*
 *example(LOCAL)*
 *example(PREyPRO)*
+*example(PRE)*
+*example(PRO)*
 /src/main/resources/application_example(LOCAL).properties
 /src/main/resources/application_example(PRE).properties
 /src/main/resources/application_example(PRO).properties

@@ -2,11 +2,11 @@
 FROM maven:3.9.4-eclipse-temurin-11-alpine AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean generate-sources package -DskipTests
--Dhttp.proxyHost=10.180.1.84
--Dhttp.proxyPort=3128
--Dhttps.proxyHost=10.180.1.84
--Dhttps.proxyPort=3128
+RUN mvn clean generate-sources package -DskipTests \   
+-Dhttp.proxyHost=10.180.1.84 \     
+-Dhttp.proxyPort=3128 \     
+-Dhttps.proxyHost=10.180.1.84 \     
+-Dhttps.proxyPort=3128 \     
 -Dhttp.nonProxyHosts="localhost|127.0.0.1|10.180.1.84|*.senescyt.gob"
 
 # Etapa 2: run con JDK 11

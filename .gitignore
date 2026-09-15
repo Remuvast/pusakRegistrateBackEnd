@@ -14,6 +14,9 @@ target/
 /src/main/resources/application_example(PRE).properties
 /src/main/resources/application_example(PRO).properties
 
+# No subir archivo de configuracion
+/src/main/resources/application.properties
+
 ### STS ###
 .apt_generated
 .classpath

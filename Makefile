@@ -2,6 +2,14 @@
 SERVICE=restapi-java
 PORT=8080
 
+# Descarga paquetes Maven
+PROXY_ARGS=--build-arg http_proxy=http://10.180.1.84:3128 \
+           --build-arg https_proxy=http://10.180.1.84:3128 \
+           --build-arg HTTP_PROXY=http://10.180.1.84:3128 \
+           --build-arg HTTPS_PROXY=http://10.180.1.84:3128 \
+           --build-arg no_proxy="localhost,127.0.0.1,10.180.1.84,senescyt.gob" \
+           --build-arg NO_PROXY="localhost,127.0.0.1,10.180.1.84,senescyt.gob"
+
 # Verifica si el puerto 8080 está ocupado
 check-port:
 	@echo "🔎 Verificando puerto $(PORT)..."

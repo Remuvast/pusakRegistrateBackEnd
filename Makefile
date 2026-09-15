@@ -23,7 +23,7 @@ check-port:
 
 docker-build:
 	@echo "🐳 Construyendo imagen Docker..."
-	docker build $(PROXY_ARGS) -t $(SERVICE) .
+	docker build --network=host $(PROXY_ARGS) -t $(SERVICE) .
 
 # Ejecuta el contenedor en el puerto especificado y en la red compartida
 run: check-port

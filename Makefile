@@ -1,16 +1,8 @@
 # Nombre del servicio Docker
 SERVICE=restapi-java
-PORT=8080
- 
-# Descarga paquetes Maven e inyección de Proxy para capas de Docker
-PROXY_ARGS=--build-arg http_proxy=http://10.180.1.84:3128 \
-           --build-arg https_proxy=http://10.180.1.84:3128 \
-           --build-arg HTTP_PROXY=http://10.180.1.84:3128 \
-           --build-arg HTTPS_PROXY=http://10.180.1.84:3128 \
-           --build-arg no_proxy="localhost,127.0.0.1,10.180.1.84,senescyt.gob" \
-           --build-arg NO_PROXY="localhost,127.0.0.1,10.180.1.84,senescyt.gob"
- 
-# Verifica si el puerto 8080 está ocupado
+PORT=8081
+
+# Verifica si el puerto 8081 está ocupado
 check-port:
 	@echo "🔎 Verificando puerto $(PORT)..."
 	@if lsof -i :$(PORT) >/dev/null 2>&1; then \
@@ -20,29 +12,29 @@ check-port:
 	else \
 		echo "✅ Puerto $(PORT) disponible."; \
 	fi
- 
+
 docker-build:
 	@echo "🐳 Construyendo imagen Docker..."
-	docker build --network=host $(PROXY_ARGS) -t $(SERVICE) .
- 
+	docker build -t $(SERVICE) .
+
 # Ejecuta el contenedor en el puerto especificado y en la red compartida
 run: check-port
 	@echo "♻️  Eliminando contenedor anterior si existe..."
 	-docker rm -f $(SERVICE) 2>/dev/null || true
- 
+
 	@echo "🚀 Ejecutando contenedor en red 'pusak-net' con reinicio automático..."
 	docker network create pusak-net || true
 	docker run -d \
 		--name $(SERVICE) \
 		--restart unless-stopped \
 		--network pusak-net \
-		-p 8080:8080 \
+		-p 8081:8081 \
 		$(SERVICE)
- 
+
 # Verifica contenedores activos
 ps:
 	docker ps | grep $(SERVICE) || echo "⛔ Ningún contenedor activo para $(SERVICE)"
- 
+
 # Limpia el puerto si está ocupado
 clean-port:
 	@echo "🧹 Verificando procesos en $(PORT)..."
@@ -53,13 +45,13 @@ clean-port:
 	else \
 		echo "✅ Nada que limpiar."; \
 	fi
- 
+
 # Limpia la imagen y archivos generados
 clean:
 	@echo "🧼 Limpiando..."
 	-docker rmi -f $(SERVICE)
 	-rm -rf target
- 
+
 # Ayuda
 help:
 	@echo "📌 Comandos disponibles:"
@@ -68,7 +60,7 @@ help:
 	@echo "  make ps            → Muestra contenedores activos"
 	@echo "  make clean-port    → Libera el puerto $(PORT)"
 	@echo "  make clean         → Borra la imagen Docker y el target"
- 
+
 # Detiene y elimina el contenedor por su PID real
 down:
 	@echo "🛑 Intentando detener contenedor basado en $(SERVICE)..."

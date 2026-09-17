@@ -145,6 +145,13 @@ public class RegistroService {
 
         solicitanteRepository.save(solicitante);
 
+/*
+renes.munoz - PARA PRUEBA DE ERRORES EN REGISTRO CONTROLADO
+if (System.currentTimeMillis() > 0) {
+    throw new RuntimeException("PRUEBA ROLLBACK JTA");
+}
+*/
+
         eventPublisher.publishEvent(
                 new RegistroCreadoEvent(
                         usuario.getId(),

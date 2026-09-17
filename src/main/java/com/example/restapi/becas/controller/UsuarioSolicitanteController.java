@@ -2,8 +2,10 @@ package com.example.restapi.becas.controller;
 
 import com.example.restapi.dto.UsuarioSolicitanteDTO;
 import com.example.restapi.service.RegistroService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Collections;
 
 @RestController
@@ -18,7 +20,23 @@ public class UsuarioSolicitanteController {
 
     @PostMapping
     public ResponseEntity<?> registrarUsuarioYSolicitante(@RequestBody UsuarioSolicitanteDTO dto) {
-        service.registrar(dto);
-        return ResponseEntity.ok(Collections.singletonMap("mensaje", "Registro exitoso"));
+
+        try {
+            service.registrar(dto);
+
+            return ResponseEntity.ok(
+                    Collections.singletonMap("mensaje", "Registro exitoso")
+            );
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap(
+                            "mensaje",
+                            "No se pudo completar el registro. Por favor, inténtelo nuevamente más tarde."
+                    ));
+        }
     }
 }

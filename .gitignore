@@ -18,9 +18,9 @@ target/
 
 # No subir archivo de configuracion
 /src/main/resources/application.properties
-Makefile
-Dockerfile
-docker-compose.yml
+/Makefile
+/Dockerfile
+/docker-compose.yml
 
 ### STS ###
 .apt_generated

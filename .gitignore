@@ -18,7 +18,7 @@ target/
 
 # No subir archivo de configuracion
 # /src/main/resources/application.properties
-# /Makefile
+/Makefile
 # /Dockerfile
 # /docker-compose.yml
 

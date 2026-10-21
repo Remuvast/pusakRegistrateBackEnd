@@ -151,6 +151,7 @@
         </configuration>
       </plugin>
 
+<!-- renes.munoz - implementar DISCAPACIDAD DINARDAP - comentar para que no compile BSG
       <plugin>
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>jaxws-maven-plugin</artifactId>
@@ -172,6 +173,7 @@
     </execution>
   </executions>
 </plugin>
+-->
 
     </plugins>
   </build>

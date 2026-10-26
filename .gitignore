@@ -17,7 +17,7 @@ target/
 /src/main/resources/application_example(PRO).properties
 
 # No subir archivo de configuracion
-/src/main/resources/application.properties
+# /src/main/resources/application.properties
 /Makefile
 /Dockerfile
 /docker-compose.yml
